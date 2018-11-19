@@ -22,3 +22,4 @@ import './blocks/button/block';
 import './blocks/tabbed-content/block';
 
 import './blocks/rating/block';
+import './blocks/map/block';
