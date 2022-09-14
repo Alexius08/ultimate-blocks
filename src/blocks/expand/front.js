@@ -35,7 +35,7 @@ Array.prototype.slice
 			}
 		}
 
-		const togglePanel = () => {
+		const togglePanel = (e) => {
 			const blockRoot = instance.closest(".ub-expand");
 			blockRoot
 				.querySelector(".ub-expand-partial .ub-expand-toggle-button")
@@ -46,6 +46,8 @@ Array.prototype.slice
 				.filter((child) => child.classList.contains("ub-expand-full"))[0];
 
 			expandingPart.classList.toggle("ub-hide");
+
+			const expandRoot = e.target.parentElement.parentElement;
 
 			if (!expandingPart.classList.contains("ub-hide")) {
 				Array.prototype.slice
@@ -60,6 +62,12 @@ Array.prototype.slice
 				setTimeout(function () {
 					window.dispatchEvent(new Event("resize"));
 				}, 100);
+				sessionStorage[expandRoot.id] =
+					document.documentElement.scrollTop || document.body.scrollTop;
+			} else {
+				if (expandRoot.getBoundingClientRect().top < 0) {
+					window.scroll(0, sessionStorage[expandRoot.id]);
+				}
 			}
 
 			Array.prototype.slice

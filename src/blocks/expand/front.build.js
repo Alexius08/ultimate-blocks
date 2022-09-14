@@ -34,13 +34,14 @@ Array.prototype.slice.call(document.getElementsByClassName("ub-expand-toggle-but
     }
   }
 
-  var togglePanel = function togglePanel() {
+  var togglePanel = function togglePanel(e) {
     var blockRoot = instance.closest(".ub-expand");
     blockRoot.querySelector(".ub-expand-partial .ub-expand-toggle-button").classList.toggle("ub-hide");
     var expandingPart = Array.prototype.slice.call(blockRoot.children).filter(function (child) {
       return child.classList.contains("ub-expand-full");
     })[0];
     expandingPart.classList.toggle("ub-hide");
+    var expandRoot = e.target.parentElement.parentElement;
 
     if (!expandingPart.classList.contains("ub-hide")) {
       Array.prototype.slice.call(document.getElementsByClassName("ub_image_slider")).forEach(function (slider) {
@@ -49,6 +50,11 @@ Array.prototype.slice.call(document.getElementsByClassName("ub-expand-toggle-but
       setTimeout(function () {
         window.dispatchEvent(new Event("resize"));
       }, 100);
+      sessionStorage[expandRoot.id] = document.documentElement.scrollTop || document.body.scrollTop;
+    } else {
+      if (expandRoot.getBoundingClientRect().top < 0) {
+        window.scroll(0, sessionStorage[expandRoot.id]);
+      }
     }
 
     Array.prototype.slice.call(expandingPart.querySelectorAll(".wp-block-embed iframe")).forEach(function (embeddedContent) {
