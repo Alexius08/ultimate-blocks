@@ -133,7 +133,7 @@ function ExpandPortion(props) {
 							);
 						}}
 						controls={["left", "center", "right"]}
-					></AlignmentToolbar>
+					/>
 				</BlockControls>
 			)}
 			<div

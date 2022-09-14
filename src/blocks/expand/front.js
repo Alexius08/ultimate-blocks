@@ -47,12 +47,11 @@ Array.prototype.slice
 
 			expandingPart.classList.toggle("ub-hide");
 
+			const expandRoot = e.target.parentElement.parentElement;
+			const expandScrollData = expandRoot.dataset;
+
 			if (expandingPart.classList.contains("ub-hide")) {
-				const expandRoot = e.target.parentElement.parentElement;
-
 				const rootPosition = expandRoot.getBoundingClientRect().top;
-
-				const expandScrollData = expandRoot.dataset;
 
 				if (rootPosition < 0) {
 					if ("scrollType" in expandScrollData) {
@@ -111,6 +110,9 @@ Array.prototype.slice
 											: 0)
 								);
 								break;
+							case "usetoggleloc":
+								window.scroll(0, sessionStorage[expandRoot.id]);
+								break;
 							default:
 								window.scrollBy(0, rootPosition);
 						}
@@ -131,6 +133,14 @@ Array.prototype.slice
 				setTimeout(function () {
 					window.dispatchEvent(new Event("resize"));
 				}, 100);
+
+				if (
+					"scrollType" in expandScrollData &&
+					expandScrollData.scrollType === "usetoggleloc"
+				) {
+					sessionStorage[expandRoot.id] =
+						document.documentElement.scrollTop || document.body.scrollTop;
+				}
 			}
 
 			Array.prototype.slice

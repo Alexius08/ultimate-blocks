@@ -41,11 +41,11 @@ Array.prototype.slice.call(document.getElementsByClassName("ub-expand-toggle-but
       return child.classList.contains("ub-expand-full");
     })[0];
     expandingPart.classList.toggle("ub-hide");
+    var expandRoot = e.target.parentElement.parentElement;
+    var expandScrollData = expandRoot.dataset;
 
     if (expandingPart.classList.contains("ub-hide")) {
-      var expandRoot = e.target.parentElement.parentElement;
       var rootPosition = expandRoot.getBoundingClientRect().top;
-      var expandScrollData = expandRoot.dataset;
 
       if (rootPosition < 0) {
         if ("scrollType" in expandScrollData) {
@@ -80,6 +80,10 @@ Array.prototype.slice.call(document.getElementsByClassName("ub-expand-toggle-but
               window.scrollBy(0, rootPosition - (document.querySelector(target) ? document.querySelector(target).offsetHeight : 0));
               break;
 
+            case "usetoggleloc":
+              window.scroll(0, sessionStorage[expandRoot.id]);
+              break;
+
             default:
               window.scrollBy(0, rootPosition);
           }
@@ -94,6 +98,10 @@ Array.prototype.slice.call(document.getElementsByClassName("ub-expand-toggle-but
       setTimeout(function () {
         window.dispatchEvent(new Event("resize"));
       }, 100);
+
+      if ("scrollType" in expandScrollData && expandScrollData.scrollType === "usetoggleloc") {
+        sessionStorage[expandRoot.id] = document.documentElement.scrollTop || document.body.scrollTop;
+      }
     }
 
     Array.prototype.slice.call(expandingPart.querySelectorAll(".wp-block-embed iframe")).forEach(function (embeddedContent) {

@@ -105,6 +105,10 @@ export function ExpandRoot(props) {
 											value: "namedelement",
 										},
 										{ label: __("Fixed height"), value: "fixedamount" },
+										{
+											label: __("Use previous position of toggle button"),
+											value: "usetoggleloc",
+										},
 									]}
 									onChange={(scrollOption) => setAttributes({ scrollOption })}
 								/>
