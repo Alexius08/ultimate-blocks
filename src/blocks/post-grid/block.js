@@ -54,6 +54,7 @@ export default registerBlockType("ub/post-grid", {
 			order,
 			categoryArray,
 			categories,
+			excludedCategories,
 			orderBy,
 			amountPosts,
 			offset,
@@ -72,6 +73,7 @@ export default registerBlockType("ub/post-grid", {
 						? categoryArray.map((cat) => cat.id)
 						: []
 					: categories,
+				categories_exclude: excludedCategories.map((cat) => cat.id),
 				order,
 				orderby: orderBy,
 				per_page: amountPosts,
