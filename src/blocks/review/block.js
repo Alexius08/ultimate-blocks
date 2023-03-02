@@ -1252,34 +1252,6 @@ function ReviewMain(props) {
 						/>
 					</PanelBody>
 
-					<PanelBody title={__("Set Value")} initialOpen={false}>
-						{editedStar > -1 && (
-							<RangeControl
-								label={__(
-									`Value for ${
-										parser.parseFromString(parts[editedStar].label, "text/html")
-											.body.textContent || "current feature"
-									}`
-								)}
-								value={parts[editedStar].value}
-								onChange={(newValue) => {
-									setAttributes({
-										parts: [
-											...parts.slice(0, editedStar),
-											Object.assign({}, parts[editedStar], {
-												value: newValue,
-											}),
-											...parts.slice(editedStar + 1),
-										],
-									});
-								}}
-								min={valueType === "star" ? 0 : 1}
-								max={valueType === "star" ? starCount : 100}
-								step={valueType === "star" ? 0.1 : 1}
-							/>
-						)}
-						<p>{__("This lets you set the value for whichever feature list item you are currently editing.")}</p>
-					</PanelBody>
 					<PanelBody title={__("Colors")} initialOpen={false}>
 						{valueType === "star" ? (
 							<PanelColorSettings
@@ -1768,6 +1740,27 @@ function ReviewMain(props) {
 			)}
 			{isSelected && (
 				<BlockControls>
+					{editedStar > -1 && (
+						<ToolbarGroup id="ub_review_value_setting">
+							<RangeControl
+								value={parts[editedStar].value}
+								onChange={(newValue) => {
+									setAttributes({
+										parts: [
+											...parts.slice(0, editedStar),
+											Object.assign({}, parts[editedStar], {
+												value: newValue,
+											}),
+											...parts.slice(editedStar + 1),
+										],
+									});
+								}}
+								min={valueType === "star" ? 0 : 1}
+								max={valueType === "star" ? starCount : 100}
+								step={valueType === "star" ? 0.1 : 1}
+							/>
+						</ToolbarGroup>
+					)}
 					{editable !== "" && (
 						<ToolbarGroup>
 							{["left", "center", "right", "justify"].map((a) => (
