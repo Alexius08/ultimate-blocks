@@ -11,6 +11,14 @@ $defaultValues = array(
 				'type'    => 'string',
 				'default' => ''
 			),
+			'useNumber'        => array(
+				'type'    => 'boolean',
+				'default' => false
+			),
+			'number'          => array(
+				'type'    => 'string', //leave room for other numbering systems
+				'default' => '1. '
+			),
 			'content'          => array(
 				'type'    => 'string',
 				'default' => ''

@@ -15,6 +15,14 @@ const attributes = {
 		type: "string",
 		default: "",
 	},
+	useNumber: {
+		type: "boolean",
+		default: false,
+	},
+	number: {
+		type: "string", //leave room for other numbering systems
+		default: "1. ",
+	},
 	content: {
 		type: "string",
 		default: "",
@@ -67,7 +75,10 @@ const attributes = {
 
 registerBlockType("ub/advanced-heading", {
 	title: __("Advanced Heading", "ultimate-blocks"),
-	description: __("Add advanced headings with more style and customizations.", "ultimate-blocks"),
+	description: __(
+		"Add advanced headings with more style and customizations.",
+		"ultimate-blocks"
+	),
 	icon,
 	category: "ultimateblocks",
 	keywords: [
@@ -79,11 +90,11 @@ registerBlockType("ub/advanced-heading", {
 	transforms,
 	example: {
 		attributes: {
-			level: 'h1',
-			content: 'Ultimate Blocks Advanced Heading',
-			alignment: 'center',
-			textColor: 'red',
-			fontFamily: 'inherit'
+			level: "h1",
+			content: "Ultimate Blocks Advanced Heading",
+			alignment: "center",
+			textColor: "red",
+			fontFamily: "inherit",
 		},
 	},
 	edit: withSelect((select, ownProps) => {

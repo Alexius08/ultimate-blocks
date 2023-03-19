@@ -221,6 +221,17 @@ function ub_include_block_attribute_css() {
 				default:
 					//nothing could be done
 					break;
+				case 'ub/advanced-heading':
+					$prefix = '.ub_advanced_heading[data-blockid="' . $attributes['blockID'] . '"]';
+					$blockStylesheets .= $prefix . '{' .
+						'font-family: "' . $attributes['fontFamily'] . '";' .
+					'}';
+					if ( $attributes['useNumber'] ) {
+						$blockStylesheets .= $prefix . '::before{' .
+							'content: "' . str_replace('"', '\\"', $attributes['number']) . '";' .
+						'}';
+					}
+					break;
 				case 'ub/advanced-video':
 					$prefix = '#ub-advanced-video-' . $attributes['blockID'];
 

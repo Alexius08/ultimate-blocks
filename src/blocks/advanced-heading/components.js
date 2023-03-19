@@ -21,6 +21,8 @@ const {
 	ButtonGroup,
 	RangeControl,
 	SelectControl,
+	TextControl,
+	ToggleControl,
 	DropdownMenu,
 } = wp.components;
 const { createRef, useEffect } = wp.element;
@@ -36,6 +38,8 @@ const AdvancedHeadingEdit = ({
 }) => {
 	const {
 		blockID,
+		useNumber,
+		number,
 		content,
 		level,
 		alignment,
@@ -121,6 +125,23 @@ const AdvancedHeadingEdit = ({
 						onChange={(alignment) => setAttributes({ alignment })}
 						isCollapsed={false}
 					/>
+				</PanelBody>
+				<PanelBody
+					title={__("Numbering", "ultimate-blocks")}
+					initialOpen={false}
+				>
+					<ToggleControl
+						label={__("Use Numbering", "ultimate-blocks")}
+						checked={useNumber}
+						onChange={() => setAttributes({ useNumber: !useNumber })}
+					/>
+					{useNumber && (
+						<TextControl
+							label={__("Number Count")}
+							value={number}
+							onChange={(number) => setAttributes({ number })}
+						/>
+					)}
 				</PanelBody>
 				<PanelBody
 					title={__("Typography", "ultimate-blocks")}
@@ -226,10 +247,12 @@ const AdvancedHeadingEdit = ({
 				rel="stylesheet"
 				href={`https://fonts.googleapis.com/css?family=${fontFamily}`}
 			/>
+			{/**NUMBER IS INSERTED VIA CSS**/}
 			<RichText
 				ref={elementRef}
 				tagName={level || "h2"}
 				value={content}
+				id={`ub-advanced-heading-${blockID}`}
 				onChange={(value) => setAttributes({ content: value })}
 				style={{
 					textAlign: alignment,
@@ -241,6 +264,7 @@ const AdvancedHeadingEdit = ({
 					fontFamily: fontFamily.includes(" ") ? `'${fontFamily}'` : fontFamily,
 					fontWeight,
 					lineHeight: lineHeight ? `${lineHeight}px` : null,
+					marginTop: 0,
 				}}
 				onSplit={(contentFragment) =>
 					contentFragment
@@ -253,6 +277,11 @@ const AdvancedHeadingEdit = ({
 				}
 				onReplace={onReplace}
 			/>
+			{useNumber && (
+				<style>{`#ub-advanced-heading-${blockID}::before{
+				content: "${number.replace(/"/g, '\\"')}";
+			}`}</style>
+			)}
 		</>
 	);
 };
