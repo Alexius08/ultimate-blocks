@@ -15,6 +15,8 @@ const { InspectorControls, RichText, PanelColorSettings, BlockControls } =
 const {
 	DateTimePicker,
 	PanelBody,
+	TextControl,
+	ToggleControl,
 	ToolbarGroup,
 	ToolbarButton,
 	SelectControl,
@@ -41,8 +43,20 @@ function CountdownMain(props) {
 			messageAlign,
 			largestUnit,
 			smallestUnit,
+			weeksEnabled,
+			weeksText,
+			daysEnabled,
+			daysText,
+			hoursEnabled,
+			hoursText,
+			minutesEnabled,
+			minutesText,
+			secondsEnabled,
+			secondsText,
 		},
 	} = props;
+
+	const timeUnits = ["week", "day", "hour", "minute", "second"];
 
 	useEffect(() => {
 		if (
@@ -53,11 +67,38 @@ function CountdownMain(props) {
 					getBlock(ID).attributes.blockID === blockID
 			)
 		) {
-			setAttributes({ blockID: block.clientId });
+			setAttributes({
+				blockID: block.clientId,
+				weeksEnabled: true,
+				daysEnabled: true,
+				hoursEnabled: true,
+				minutesEnabled: true,
+				secondsEnabled: true,
+			});
+		} else {
+			//transition from old system to new system
+			if (
+				[
+					weeksEnabled,
+					daysEnabled,
+					hoursEnabled,
+					minutesEnabled,
+					secondsEnabled,
+				].filter((a) => a === true).length === 0
+			) {
+				const largestUnitIndex = timeUnits.indexOf(largestUnit);
+				const smallestUnitIndex = timeUnits.indexOf(smallestUnit);
+
+				setAttributes({
+					weeksEnabled: largestUnitIndex === 0,
+					daysEnabled: largestUnitIndex <= 1 && smallestUnitIndex >= 1,
+					hoursEnabled: largestUnitIndex <= 2 && smallestUnitIndex >= 2,
+					minutesEnabled: largestUnitIndex <= 3 && smallestUnitIndex >= 3,
+					secondsEnabled: smallestUnitIndex === 4,
+				});
+			}
 		}
 	}, []);
-
-	const timeUnits = ["week", "day", "hour", "minute", "second"];
 
 	return (
 		<>
@@ -74,35 +115,100 @@ function CountdownMain(props) {
 								}}
 							/>
 						</PanelBody>
-						<PanelBody title={__("Displaying unit")} initialOpen={false}>
-							<SelectControl
-								label={__("Largest unit")}
-								value={largestUnit}
-								options={timeUnits
-									.filter((_, i) => timeUnits.indexOf(smallestUnit) > i)
-									.map((timeUnit) => ({
-										label: __(timeUnit),
-										value: timeUnit,
-									}))}
-								onChange={(largestUnit) => {
-									setAttributes({ largestUnit });
-									setForceUpdate(true);
-								}}
+						<PanelBody title={__("Unit display")} initialOpen={false}>
+							{/*<SelectControl
+							label={__("Largest unit")}
+							value={largestUnit}
+							options={timeUnits
+								.filter((_, i) => timeUnits.indexOf(smallestUnit) > i)
+								.map((timeUnit) => ({
+									label: __(timeUnit),
+									value: timeUnit,
+								}))}
+							onChange={(largestUnit) => {
+								setAttributes({ largestUnit });
+								setForceUpdate(true);
+							}}
+						/>
+						<SelectControl
+							label={__("Smallest unit")}
+							value={smallestUnit}
+							options={timeUnits
+								.filter((_, i) => timeUnits.indexOf(largestUnit) < i)
+								.map((timeUnit) => ({
+									label: __(timeUnit),
+									value: timeUnit,
+								}))}
+							onChange={(smallestUnit) => {
+								setAttributes({ smallestUnit });
+								setForceUpdate(true);
+							}}
+						/>*/}
+							{/**ADD COUNTDOWN TOGGLES HERE */}
+							<ToggleControl
+								label={"Show weeks"}
+								checked={weeksEnabled}
+								onChange={() => setAttributes({ weeksEnabled: !weeksEnabled })}
 							/>
-							<SelectControl
-								label={__("Smallest unit")}
-								value={smallestUnit}
-								options={timeUnits
-									.filter((_, i) => timeUnits.indexOf(largestUnit) < i)
-									.map((timeUnit) => ({
-										label: __(timeUnit),
-										value: timeUnit,
-									}))}
-								onChange={(smallestUnit) => {
-									setAttributes({ smallestUnit });
-									setForceUpdate(true);
-								}}
+							{weeksEnabled && (
+								<TextControl
+									label={__("Custom label for weeks")}
+									value={weeksText}
+									onChange={(weeksText) => setAttributes({ weeksText })}
+								/>
+							)}
+							<ToggleControl
+								label={"Show days"}
+								checked={daysEnabled}
+								onChange={() => setAttributes({ daysEnabled: !daysEnabled })}
 							/>
+							{daysEnabled && (
+								<TextControl
+									label={__("Custom label for days")}
+									value={daysText}
+									onChange={(daysText) => setAttributes({ daysText })}
+								/>
+							)}
+							<ToggleControl
+								label={"Show hours"}
+								checked={hoursEnabled}
+								onChange={() => setAttributes({ hoursEnabled: !hoursEnabled })}
+							/>
+							{hoursEnabled && (
+								<TextControl
+									label={__("Custom label for hours")}
+									value={hoursText}
+									onChange={(hoursText) => setAttributes({ hoursText })}
+								/>
+							)}
+							<ToggleControl
+								label={"Show minutes"}
+								checked={minutesEnabled}
+								onChange={() =>
+									setAttributes({ minutesEnabled: !minutesEnabled })
+								}
+							/>
+							{minutesEnabled && (
+								<TextControl
+									label={__("Custom label for days")}
+									value={minutesText}
+									onChange={(minutesText) => setAttributes({ minutesText })}
+								/>
+							)}
+							<ToggleControl
+								label={"Show seconds"}
+								checked={secondsEnabled}
+								onChange={() =>
+									setAttributes({ secondsEnabled: !secondsEnabled })
+								}
+							/>
+							{daysEnabled && (
+								<TextControl
+									label={__("Custom label for days")}
+									value={secondsText}
+									onChange={(secondsText) => setAttributes({ secondsText })}
+								/>
+							)}
 						</PanelBody>
 					</InspectorControls>
 
@@ -179,6 +285,16 @@ function CountdownMain(props) {
 					size={circleSize}
 					largestUnit={largestUnit}
 					smallestUnit={smallestUnit}
+					weeksEnabled={weeksEnabled}
+					weeksText={weeksText}
+					daysEnabled={daysEnabled}
+					daysText={daysText}
+					hoursEnabled={hoursEnabled}
+					hoursText={hoursText}
+					minutesEnabled={minutesEnabled}
+					minutesText={minutesText}
+					secondsEnabled={secondsEnabled}
+					secondsText={secondsText}
 					isAnimated={true}
 					forceUpdate={forceUpdate}
 					finishForcedUpdate={() => setForceUpdate(false)}
@@ -198,7 +314,7 @@ function CountdownMain(props) {
 
 registerBlockType("ub/countdown", {
 	title: __("Countdown"),
-	description: __("Add a countdown in your post/pages. Comes with three different styles.", "ultimate-blocks"),
+	description: __("Add a countdown timer", "ultimate-blocks"),
 	icon: icon,
 	category: "ultimateblocks",
 	keywords: [__("Countdown"), __("Timer"), __("Ultimate Blocks")],
@@ -231,6 +347,7 @@ registerBlockType("ub/countdown", {
 			type: "number",
 			default: 70,
 		},
+		//phase out
 		largestUnit: {
 			type: "string",
 			default: "week",
@@ -238,6 +355,47 @@ registerBlockType("ub/countdown", {
 		smallestUnit: {
 			type: "string",
 			default: "second",
+		},
+		//replacements
+		weeksEnabled: {
+			type: "boolean",
+			default: false,
+		},
+		weeksText: {
+			type: "string",
+			default: "weeks",
+		},
+		daysEnabled: {
+			type: "boolean",
+			default: false,
+		},
+		daysText: {
+			type: "string",
+			default: "days",
+		},
+		hoursEnabled: {
+			type: "boolean",
+			default: false,
+		},
+		hoursText: {
+			type: "string",
+			default: "hours",
+		},
+		minutesEnabled: {
+			type: "boolean",
+			default: false,
+		},
+		minutesText: {
+			type: "string",
+			default: "minutes",
+		},
+		secondsEnabled: {
+			type: "boolean",
+			default: false,
+		},
+		secondsText: {
+			type: "string",
+			default: "seconds",
 		},
 	},
 	example: {},

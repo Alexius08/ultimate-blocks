@@ -29,8 +29,24 @@ function Timer(props) {
 	/*timeLeft: this.remainingTime(),
 	numberChange: Array(5).fill("none"), //one for each of the following: week, day, hour, minute, second
 	forceRefresh: false,*/
-	const { color, size, largestUnit, smallestUnit, timerStyle, forceUpdate } =
-		props;
+	const {
+		color,
+		size,
+		largestUnit,
+		smallestUnit,
+		weeksEnabled,
+		weeksText,
+		daysEnabled,
+		daysText,
+		hoursEnabled,
+		hoursText,
+		minutesEnabled,
+		minutesText,
+		secondsEnabled,
+		secondsText,
+		timerStyle,
+		forceUpdate,
+	} = props;
 
 	const remainingTime = () => props.deadline - Math.floor(Date.now() / 1000);
 
@@ -154,12 +170,15 @@ function Timer(props) {
 	const minutes = ((timeLeft - seconds) % 3600) / 60;
 
 	let hours = (timeLeft - minutes * 60 - seconds) / 3600;
-	if (timeUnits.indexOf(largestUnit) < 2) {
+
+	if (daysEnabled) {
 		hours %= 24;
+	} else if (weeksEnabled) {
+		hours %= 168;
 	}
 
 	let days = (timeLeft - hours * 3600 - minutes * 60 - seconds) / 86400;
-	if (largestUnit === "week") {
+	if (weeksEnabled) {
 		days %= 7;
 	}
 
@@ -169,43 +188,58 @@ function Timer(props) {
 	const diff =
 		timeUnits.indexOf(smallestUnit) - timeUnits.indexOf(largestUnit) + 1;
 
+	const activeUnits = [
+		weeksEnabled,
+		daysEnabled,
+		hoursEnabled,
+		minutesEnabled,
+		secondsEnabled,
+	].filter((a) => a === true);
+
 	const defaultFormat = (
 		<p>
 			{[
-				`${weeks} ${__("weeks", "ultimate-blocks")}`,
-				`${days} ${__("days", "ultimate-blocks")}`,
-				`${hours} ${__("hours", "ultimate-blocks")}`,
-				`${minutes} ${__("minutes", "ultimate-blocks")}`,
-				`${seconds} ${__("seconds", "ultimate-blocks")}`,
-			]
-				.slice(
-					timeUnits.indexOf(largestUnit),
-					timeUnits.indexOf(smallestUnit) + 1
-				)
-				.join(" ")}
+				weeksEnabled ? `${weeks} ${weeksText}` : "",
+				daysEnabled ? `${days} ${daysText}` : "",
+				hoursEnabled ? `${hours} ${hoursText}` : "",
+				minutesEnabled ? `${minutes} ${minutesText}` : "",
+				secondsEnabled ? `${seconds} ${secondsText}` : "",
+			].join(" ")}
 		</p>
 	);
 
 	const circularFormatValues = [
-		<Circle color={color} size={size} amount={weeks} total={52} />,
-		<Circle color={color} size={size} amount={days} total={7} />,
-		<Circle color={color} size={size} amount={hours} total={24} />,
-		<Circle color={color} size={size} amount={minutes} total={60} />,
-		<Circle color={color} size={size} amount={seconds} total={60} />,
-	].slice(timeUnits.indexOf(largestUnit), timeUnits.indexOf(smallestUnit) + 1);
+		...(weeksEnabled
+			? [<Circle color={color} size={size} amount={weeks} total={52} />]
+			: []),
+		...(daysEnabled
+			? [<Circle color={color} size={size} amount={days} total={7} />]
+			: []),
+		...(hoursEnabled
+			? [<Circle color={color} size={size} amount={hours} total={24} />]
+			: []),
+		...(minutesEnabled
+			? [<Circle color={color} size={size} amount={minutes} total={60} />]
+			: []),
+		...(secondsEnabled
+			? [<Circle color={color} size={size} amount={seconds} total={60} />]
+			: []),
+	];
 
 	const circularFormatLabels = [
-		<p>{__("Weeks", "ultimate-blocks")}</p>,
-		<p>{__("Days", "ultimate-blocks")}</p>,
-		<p>{__("Hours", "ultimate-blocks")}</p>,
-		<p>{__("Minutes", "ultimate-blocks")}</p>,
-		<p>{__("Seconds", "ultimate-blocks")}</p>,
-	].slice(timeUnits.indexOf(largestUnit), timeUnits.indexOf(smallestUnit) + 1);
+		...(weeksEnabled ? [<p>{weeksText}</p>] : []),
+		...(daysEnabled ? [<p>{daysText}</p>] : []),
+		...(hoursEnabled ? [<p>{hoursText}</p>] : []),
+		...(minutesText ? [<p>{minutesText}</p>] : []),
+		...(secondsText ? [<p>{secondsText}</p>] : []),
+	];
 
 	const circularFormat = (
 		<div
 			className="ub_countdown_circular_container"
-			style={{ gridTemplateColumns: Array(diff).fill("1fr").join(" ") }}
+			style={{
+				gridTemplateColumns: Array(activeUnits.length).fill("1fr").join(" "),
+			}}
 		>
 			{circularFormatValues}
 			{circularFormatLabels}
@@ -215,102 +249,140 @@ function Timer(props) {
 	const separator = <span className="ub-countdown-separator">:</span>;
 
 	const odometerLabels = [
-		<span>{__("Weeks", "ultimate-blocks")}</span>,
-		<span>{__("Days", "ultimate-blocks")}</span>,
-		<span>{__("Hours", "ultimate-blocks")}</span>,
-		<span>{__("Minutes", "ultimate-blocks")}</span>,
-		<span>{__("Seconds", "ultimate-blocks")}</span>,
-	].slice(timeUnits.indexOf(largestUnit), timeUnits.indexOf(smallestUnit) + 1);
+		...(weeksEnabled ? [<span>{weeksText}</span>] : []),
+		...(daysEnabled ? [<span>{daysText}</span>] : []),
+		...(hoursEnabled ? [<span>{hoursText}</span>] : []),
+		...(minutesEnabled ? [<span>{minutesText}</span>] : []),
+		...(secondsEnabled ? [<span>{secondsText}</span>] : []),
+	];
 
 	const odometerValues = [
-		<DigitDisplay
-			value={weeks}
-			numberChange={numberChange[0]}
-			stopAnimation={() => {
-				setNumberChange(["none", ...numberChange.slice(1)]);
-			}}
-			forceRefresh={forceRefresh}
-			finishForceRefresh={() => {
-				setForceRefresh(false);
-				setNumberChange(["none", ...numberChange.slice(1)]);
-			}}
-		/>,
-		<DigitDisplay
-			value={days}
-			maxDisplay={largestUnit === "week" ? 6 : 0}
-			numberChange={numberChange[1]}
-			stopAnimation={() => {
-				setNumberChange([numberChange[0], "none", ...numberChange.slice(2)]);
-			}}
-			forceRefresh={forceRefresh}
-			finishForceRefresh={() => {
-				setForceRefresh(false);
-				setNumberChange([numberChange[0], "none", ...numberChange.slice(2)]);
-			}}
-		/>,
-		<DigitDisplay
-			value={hours}
-			maxDisplay={largestUnit === "hour" ? 0 : 23}
-			numberChange={numberChange[2]}
-			stopAnimation={() => {
-				setNumberChange([
-					...numberChange.slice(0, 2),
-					"none",
-					...numberChange.slice(3),
-				]);
-			}}
-			forceRefresh={forceRefresh}
-			finishForceRefresh={() => {
-				setForceRefresh(false);
-				setNumberChange([
-					...numberChange.slice(0, 2),
-					"none",
-					...numberChange.slice(3),
-				]);
-			}}
-		/>,
-		<DigitDisplay
-			value={minutes}
-			maxDisplay={59}
-			numberChange={numberChange[3]}
-			stopAnimation={() => {
-				setNumberChange([...numberChange.slice(0, 3), "none", numberChange[4]]);
-			}}
-			forceRefresh={forceRefresh}
-			finishForceRefresh={() => {
-				setForceRefresh(false);
-				setNumberChange([...numberChange.slice(0, 3), "none", numberChange[4]]);
-			}}
-		/>,
-		<DigitDisplay
-			value={seconds}
-			maxDisplay={59}
-			numberChange={numberChange[4]}
-			stopAnimation={() => {
-				setNumberChange([...numberChange.slice(0, 4), "none"]);
-			}}
-			forceRefresh={forceRefresh}
-			finishForceRefresh={() => {
-				setForceRefresh(false);
-				setNumberChange([...numberChange.slice(0, 4), "none"]);
-			}}
-		/>,
-	].slice(timeUnits.indexOf(largestUnit), timeUnits.indexOf(smallestUnit) + 1);
+		...(weeksEnabled
+			? [
+					<DigitDisplay
+						value={weeks}
+						numberChange={numberChange[0]}
+						stopAnimation={() => {
+							setNumberChange(["none", ...numberChange.slice(1)]);
+						}}
+						forceRefresh={forceRefresh}
+						finishForceRefresh={() => {
+							setForceRefresh(false);
+							setNumberChange(["none", ...numberChange.slice(1)]);
+						}}
+					/>,
+			  ]
+			: []),
+		...(daysEnabled
+			? [
+					<DigitDisplay
+						value={days}
+						maxDisplay={weeksEnabled ? 6 : 0}
+						numberChange={numberChange[1]}
+						stopAnimation={() => {
+							setNumberChange([
+								numberChange[0],
+								"none",
+								...numberChange.slice(2),
+							]);
+						}}
+						forceRefresh={forceRefresh}
+						finishForceRefresh={() => {
+							setForceRefresh(false);
+							setNumberChange([
+								numberChange[0],
+								"none",
+								...numberChange.slice(2),
+							]);
+						}}
+					/>,
+			  ]
+			: []),
+		...(hoursEnabled
+			? [
+					<DigitDisplay
+						value={hours}
+						maxDisplay={daysEnabled ? 23 : weeksEnabled ? 167 : 0}
+						numberChange={numberChange[2]}
+						stopAnimation={() => {
+							setNumberChange([
+								...numberChange.slice(0, 2),
+								"none",
+								...numberChange.slice(3),
+							]);
+						}}
+						forceRefresh={forceRefresh}
+						finishForceRefresh={() => {
+							setForceRefresh(false);
+							setNumberChange([
+								...numberChange.slice(0, 2),
+								"none",
+								...numberChange.slice(3),
+							]);
+						}}
+					/>,
+			  ]
+			: []),
+		...(minutesEnabled
+			? [
+					<DigitDisplay
+						value={minutes}
+						maxDisplay={59}
+						numberChange={numberChange[3]}
+						stopAnimation={() => {
+							setNumberChange([
+								...numberChange.slice(0, 3),
+								"none",
+								numberChange[4],
+							]);
+						}}
+						forceRefresh={forceRefresh}
+						finishForceRefresh={() => {
+							setForceRefresh(false);
+							setNumberChange([
+								...numberChange.slice(0, 3),
+								"none",
+								numberChange[4],
+							]);
+						}}
+					/>,
+			  ]
+			: []),
+		...(secondsEnabled
+			? [
+					<DigitDisplay
+						value={seconds}
+						maxDisplay={59}
+						numberChange={numberChange[4]}
+						stopAnimation={() => {
+							setNumberChange([...numberChange.slice(0, 4), "none"]);
+						}}
+						forceRefresh={forceRefresh}
+						finishForceRefresh={() => {
+							setForceRefresh(false);
+							setNumberChange([...numberChange.slice(0, 4), "none"]);
+						}}
+					/>,
+			  ]
+			: []),
+	];
 
 	const odometerFormat = (
 		<div>
 			<div
 				className="ub-countdown-odometer-container"
 				style={{
-					gridTemplateColumns: Array(diff).fill("1fr").join(" auto "),
+					gridTemplateColumns: Array(activeUnits.length)
+						.fill("1fr")
+						.join(" auto "),
 				}}
 			>
 				{odometerLabels
 					.map((e, i) => (i < odometerLabels.length - 1 ? [e, <span />] : [e]))
-					.reduce((a, b) => a.concat(b))}
+					.flat()}
 				{odometerValues
 					.map((e, i) => (i < odometerValues.length - 1 ? [e, separator] : [e]))
-					.reduce((a, b) => a.concat(b))}
+					.flat()}
 			</div>
 		</div>
 	);

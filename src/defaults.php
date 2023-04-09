@@ -606,6 +606,7 @@ $defaultValues = array(
 				'type'    => 'number',
 				'default' => 70
 			),
+			//PHASE OUT ATTRIBUTES BELOW
 			'largestUnit'   => array(
 				'type'    => 'string',
 				'default' => 'week'
@@ -613,7 +614,48 @@ $defaultValues = array(
 			'smallestUnit'  => array(
 				'type'    => 'string',
 				'default' => 'second'
-			)
+			),
+			//PHASE OUT ATTRIBUTES ABOVE
+			'weeksEnabled' => array(
+				'type' => 'boolean',
+				'default' => false,
+			),
+			'weeksText' => array(
+				'type' => 'string',
+				'default' => 'weeks',
+			),
+			'daysEnabled' => array(
+				'type' => 'boolean',
+				'default' => false,
+			),
+			'daysText' => array(
+				'type' => 'string',
+				'default' => 'days',
+			),
+			'hoursEnabled' => array(
+				'type' => 'boolean',
+				'default' => false,
+			),
+			'hoursText' => array(
+				'type' => 'string',
+				'default' => 'hours',
+			),
+			'minutesEnabled' => array(
+				'type' => 'boolean',
+				'default' => false,
+			),
+			'minutesText' => array(
+				'type' => 'string',
+				'default' => "minutes",
+			),
+			'secondsEnabled' => array(
+				'type' => 'boolean',
+				'default' => false,
+			),
+			'secondsText' => array(
+				'type' => 'string',
+				'default' => 'seconds',
+			),
 		)
 	),
 	'ub/divider'                    => array(
