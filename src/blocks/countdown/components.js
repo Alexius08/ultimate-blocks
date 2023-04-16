@@ -96,13 +96,16 @@ function Timer(props) {
 		const oldMinutes = ((prevTimeLeft - oldSeconds) % 3600) / 60;
 
 		let oldHours = (prevTimeLeft - oldMinutes * 60 - oldSeconds) / 3600;
-		if (timeUnits.indexOf(largestUnit) < 2) {
+		if (daysEnabled) {
 			oldHours %= 24;
+		} else if (weeksEnabled) {
+			oldHours %= 168;
 		}
+	
 
 		let oldDays =
 			(prevTimeLeft - oldHours * 3600 - oldMinutes * 60 - oldSeconds) / 86400;
-		if (largestUnit === "week") {
+		if (weeksEnabled) {
 			oldDays %= 7;
 		}
 
@@ -121,12 +124,15 @@ function Timer(props) {
 		const minutes = ((timeLeft - seconds) % 3600) / 60;
 
 		let hours = (timeLeft - minutes * 60 - seconds) / 3600;
-		if (timeUnits.indexOf(largestUnit) < 2) {
+		if (daysEnabled) {
 			hours %= 24;
+		} else if (weeksEnabled) {
+			hours %= 168;
 		}
+	
 
 		let days = (timeLeft - hours * 3600 - minutes * 60 - seconds) / 86400;
-		if (largestUnit === "week") {
+		if (weeksEnabled) {
 			days %= 7;
 		}
 
@@ -185,8 +191,7 @@ function Timer(props) {
 	const weeks =
 		(timeLeft - days * 86400 - hours * 3600 - minutes * 60 - seconds) / 604800;
 
-	const diff =
-		timeUnits.indexOf(smallestUnit) - timeUnits.indexOf(largestUnit) + 1;
+	//const diff = 		timeUnits.indexOf(smallestUnit) - timeUnits.indexOf(largestUnit) + 1;
 
 	const activeUnits = [
 		weeksEnabled,
@@ -230,8 +235,8 @@ function Timer(props) {
 		...(weeksEnabled ? [<p>{weeksText}</p>] : []),
 		...(daysEnabled ? [<p>{daysText}</p>] : []),
 		...(hoursEnabled ? [<p>{hoursText}</p>] : []),
-		...(minutesText ? [<p>{minutesText}</p>] : []),
-		...(secondsText ? [<p>{secondsText}</p>] : []),
+		...(minutesEnabled ? [<p>{minutesText}</p>] : []),
+		...(secondsEnabled ? [<p>{secondsText}</p>] : []),
 	];
 
 	const circularFormat = (

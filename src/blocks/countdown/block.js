@@ -59,14 +59,7 @@ function CountdownMain(props) {
 	const timeUnits = ["week", "day", "hour", "minute", "second"];
 
 	useEffect(() => {
-		if (
-			blockID === "" ||
-			getClientIdsWithDescendants().some(
-				(ID) =>
-					"blockID" in getBlock(ID).attributes &&
-					getBlock(ID).attributes.blockID === blockID
-			)
-		) {
+		if (blockID === "") {
 			setAttributes({
 				blockID: block.clientId,
 				weeksEnabled: true,
@@ -75,7 +68,7 @@ function CountdownMain(props) {
 				minutesEnabled: true,
 				secondsEnabled: true,
 			});
-		} else {
+		} else if (blockID !== block.clientId) {
 			//transition from old system to new system
 			if (
 				[
@@ -97,6 +90,14 @@ function CountdownMain(props) {
 					secondsEnabled: smallestUnitIndex === 4,
 				});
 			}
+		} else if (
+			getClientIdsWithDescendants().some(
+				(ID) =>
+					"blockID" in getBlock(ID).attributes &&
+					getBlock(ID).attributes.blockID === blockID
+			)
+		) {
+			setAttributes({ blockID: block.clientId });
 		}
 	}, []);
 
@@ -116,35 +117,6 @@ function CountdownMain(props) {
 							/>
 						</PanelBody>
 						<PanelBody title={__("Unit display")} initialOpen={false}>
-							{/*<SelectControl
-							label={__("Largest unit")}
-							value={largestUnit}
-							options={timeUnits
-								.filter((_, i) => timeUnits.indexOf(smallestUnit) > i)
-								.map((timeUnit) => ({
-									label: __(timeUnit),
-									value: timeUnit,
-								}))}
-							onChange={(largestUnit) => {
-								setAttributes({ largestUnit });
-								setForceUpdate(true);
-							}}
-						/>
-						<SelectControl
-							label={__("Smallest unit")}
-							value={smallestUnit}
-							options={timeUnits
-								.filter((_, i) => timeUnits.indexOf(largestUnit) < i)
-								.map((timeUnit) => ({
-									label: __(timeUnit),
-									value: timeUnit,
-								}))}
-							onChange={(smallestUnit) => {
-								setAttributes({ smallestUnit });
-								setForceUpdate(true);
-							}}
-						/>*/}
-							{/**ADD COUNTDOWN TOGGLES HERE */}
 							<ToggleControl
 								label={"Show weeks"}
 								checked={weeksEnabled}
